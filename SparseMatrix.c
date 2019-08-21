@@ -1,3 +1,5 @@
+// Convert an integer matrix to sparse/compact form
+
 #include <stdio.h>
 
 void read_mat(int rows, int cols, int *mat)
