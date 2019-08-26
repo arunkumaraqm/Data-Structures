@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "StackOperationsHeader.h"
 
+// StackDataType is declared in the custom header file
 StackDataType stack;
 
 void my_constructor()
@@ -15,7 +16,7 @@ void read_elem( int* element )
 
 void my_push( int element )
 {
-	
+	// Stack full condition
 	if( stack.top + 1 == MAXSTACKSIZE )
 		printf("\nStack Overflow.");
 
@@ -29,6 +30,7 @@ void my_push( int element )
 
 int my_pop()
 {
+	// Stack empty condition
 	if( stack.top == -1 )
 	{
 		printf("\nStack Underflow.");
@@ -36,7 +38,7 @@ int my_pop()
 	}
 	else
 	{
-		printf("\n%d", stack.arr[stack.top]);//
+		printf("\n%d", stack.arr[stack.top]);// 
 		return stack.arr[stack.top--];
 	}
 }
@@ -54,30 +56,33 @@ void main()
 {
 	int choice;
 	int elem;
+	
+	// Initializing the function pointers to the functions in this file
 	stack.push = my_push;
 	stack.pop = my_pop;
 	stack.display = my_display;
 	stack.constructor = my_constructor;
 	
+	// Essentially stackInitialize
 	stack.constructor();
 	
-	
+	// Menu
 	do{
 		scanf("%d", &choice);
 		
 		switch(choice)
 		{
-			case 1  :  read_elem(&elem);
-					   stack.push(elem);
-					   break;
+			case 1  :  read_elem(&elem); // Just might be too small of a method to call.
+				   stack.push(elem);
+				   break;
 					
 			case 2  :  stack.pop();
-					   break;
+				   break;
 					
 			case 3  :  stack.display();
-					   break;
+				   break;
 					
-			default :  choice = 4;
+			default :  choice = 4; // This initialization is to solely dissatisfy the while condition.
 		}
 	}while(choice != 4);
 }
