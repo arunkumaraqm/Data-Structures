@@ -1,3 +1,5 @@
+// A precursor to SparseMatrixAddition
+
 #include <stdio.h>
 
 void read_arr(int size, int arr[])
@@ -196,22 +198,3 @@ void main()
 	int size_sum = add(size_one, sparse_arr_one, size_two, sparse_arr_two, sparse_sum);
 	write_mat(size_sum, 2, sparse_sum);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
