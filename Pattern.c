@@ -1,3 +1,12 @@
+// Prints this pattern for given noof rows and columns.
+//  1  2  3  4  5  6
+// 16 17 18 19 20  7
+// 15 24 23 22 21  8
+// 14 13 12 11 10  9
+
+
+// This code still fails a few test cases.
+
 #include <stdio.h>
 
 void pattern(int noof_rows, int noof_cols, int mat[noof_rows][noof_cols])
