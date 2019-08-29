@@ -34,7 +34,7 @@ int convert_to_sparse( int size, int arr[], int sparse_arr[][2])
 			sparse_arr[noof_nz][1] = arr[i];
 			++noof_nz;	
 		}
-	printf("%d ", noof_nz);//	
+	//printf("%d ", noof_nz);
 	return noof_nz;
 }
 
@@ -127,56 +127,6 @@ int add( int size_one, int sparse_arr_one[][2], int size_two, int sparse_arr_two
 	return size_sum;
 } 
 
-/*Broken code
-int add( int size_one, int sparse_arr_one[][2], int size_two, int sparse_arr_two[][2], int sum[][2] )
-{
-    int *cur_one = sparse_arr_one;
-	int *cur_two = sparse_arr_two;
-	int *cur_sum = sum;
-	int size_sum = 0;
-	int i, j;
-	int limit_one = sparse_arr_one[size_one - 1][0];
-	int limit_two = sparse_arr_two[size_two - 1][0];
-
-    while(*cur_one <= limit_one)
-    {
-        while(*cur_one <= *cur_two)
-        {
-			*cur_sum = *cur_two;
-			*(cur_sum + 1) = *(cur_two + 1);
-			cur_sum += 2;
-			size_sum++; 
-
-            cur_two += 2;
-            printf("\nFlag one"); //
-        }        
-
-		if( *cur_two == *cur_one )
-		{
-			*cur_sum = *cur_one;
-			*(cur_sum + 1) = *(cur_one + 1) + *(cur_two + 1); //Actual addition happens only here
-			cur_sum += 2;
-			size_sum++;
-
-			cur_two += 2; 
-		}
-
-        cur_one += 2;
-            printf("\nFlag two"); //
-    }
-    
-    while(*cur_two <= limit_two)
-    {
-        *cur_sum = *cur_two;
-		*(cur_sum + 1) = *(cur_two + 1);
-	    cur_sum += 2;
-	    size_sum++; 
-
-        cur_two += 2;
-            printf("\nFlag three"); //
-    }
-}
-*/
 void main()
 {
 	int size;
