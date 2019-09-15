@@ -1,0 +1,24 @@
+Test 1:
+a+b
+Output 1:
+ab+
+
+Test2:
+a+b+c
+Output 2:
+ab+c+
+
+Test 3:
+a+b*c-d/e*f
+Output 3:
+abc*+de/f*-
+
+Test 4:
+(a+b*c-d)/(e*f)
+Output 4:
+abc*+d-ef*/
+
+Test 5:
+a+(b*c-(d/e^f)*g)*h
+Output 5:
+abc*def^/g*-h*+
