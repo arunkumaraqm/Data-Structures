@@ -1,3 +1,6 @@
+// Implement deque using stack
+// Not completely tested yet
+
 #include <stdio.h>
 #include <limits.h>
 #define capacity 5
@@ -32,8 +35,13 @@ void constructor(struct Stack* deque)
 
 void push(struct Stack* deque, int element)
 {	
+	// These two lines were causing the null pointer assignment error, the only error I know of which causes so much havoc
+	/*	deque->arr[deque->top] = element;
+		deque->top += 1;*/
+	
+	// Fixed
 		deque->top += 1;
-		deque->arr[deque->top] = element;		
+		deque->arr[deque->top] = element;			
 }
 
 int pop(struct Stack* deque)
@@ -153,21 +161,18 @@ void main()
 		
 		switch(choice)
 		{
-			case 1  :  	printf("\nEntering case 1");
-						insert_left(&deque);
-						printf("\nExiting case 1");
-					   break;
-			case 2  :  	printf("\nEntering case 2");
-						insert_right(&deque);
-						printf("\nExiting case 2");
+			case 1  :  insert_left(&deque);
+				   break;
+			case 2  :  insert_right(&deque);
+				   break;
 			case 3  :  deleted_element = delete_left(&deque);
-					   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
-					   break;
+				   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
+				   break;
 			case 4  :  deleted_element = delete_right(&deque);
-					   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
-					   break;
+				   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
+				   break;
 			case 5  :  display(&deque);
-					   break;   
+				   break;   
 			default :  choice = 6;
 		}
 		
