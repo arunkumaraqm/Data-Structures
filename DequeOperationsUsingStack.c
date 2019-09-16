@@ -1,7 +1,7 @@
 // Implement deque using stack
-// Not completely tested yet
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
 #define capacity 5
 
@@ -28,6 +28,7 @@ int is_full(struct Stack* deque)
 	return deque->top == capacity - 1;
 }
 
+// Initialization for top of stack; this function is called always after declaration of a Deque obj
 void constructor(struct Stack* deque)
 {
 	deque->top = -1;
@@ -35,11 +36,6 @@ void constructor(struct Stack* deque)
 
 void push(struct Stack* deque, int element)
 {	
-	// These two lines were causing the null pointer assignment error, the only error I know of which causes so much havoc
-	/*	deque->arr[deque->top] = element;
-		deque->top += 1;*/
-	
-	// Fixed
 		deque->top += 1;
 		deque->arr[deque->top] = element;			
 }
@@ -49,39 +45,41 @@ int pop(struct Stack* deque)
 		return deque->arr[deque->top--];
 }
 
+// Costly insert left
 void insert_left(struct Stack* deque)
 {
-	printf("\nInside insert left");//
 	if( is_full(deque) )
-		printf("\nQueue full.");
+		printf("Queue full.\n");
 	
 	else
 	{
-		struct Stack* second_stack;
+		struct Stack* second_stack = (struct Stack*) malloc(sizeof (struct Stack));
 		constructor(second_stack);
-		
-		while( is_empty(deque) )
+
+		// Move all elements from deque to second_stack
+		while( !is_empty(deque) )
 		{
 				push(second_stack, pop(deque) );
 		}
-		
+
+		// Add new element to deque
 		push(deque, read_element());
-		printf("\nInserted.");//
-		
-		while ( is_empty(second_stack) )
+
+		// Move all the other elements back from second_stack to deque
+		while ( !is_empty(second_stack) )
 		{
 				push(deque, pop(second_stack) );
 		}
+
+		free(second_stack);
 		
-		deque->top += 1;
 	}	
 }
 
 void insert_right(struct Stack* deque)
 {
-	printf("\nInside insert right");//
 	if( is_full(deque) )
-		printf("\nQueue full.");
+		printf("Queue full.\n");
 	
 	else
 	{
@@ -89,33 +87,36 @@ void insert_right(struct Stack* deque)
 	}	
 }
 
+// Costly delete left
 int delete_left(struct Stack* deque) 
 {
 	if( is_empty(deque) )
 	{
-		printf("\nQueue empty.");
+		printf("Queue empty.\n");
 		return INT_MIN; 
 	}
 	
 	else
 	{
-		struct Stack* second_stack;
+		struct Stack* second_stack = (struct Stack*) malloc(sizeof (struct Stack));
 		constructor(second_stack);
-		
-		while( is_empty(deque) )
+
+		// Move all the elements from deque to second_stack
+		while( !is_empty(deque) )
 		{
 				push(second_stack, pop(deque) );
 		}
-		
+
+		// Delete the element which was the leftmost / bottom most on deque
 		int deleted_element = pop(second_stack);
-		
-		while ( is_empty(second_stack) )
+
+		// Move all the elements back from second_stack to deque
+		while ( !is_empty(second_stack) )
 		{
 				push(deque, pop(second_stack) );
 		}
-		
-		deque->top -= 1;
-		
+			
+		free(second_stack);
 		return deleted_element;
 	}	
 }
@@ -124,7 +125,7 @@ int delete_right(struct Stack* deque)
 {
 	if( is_empty(deque) )
 	{
-		printf("\nQueue empty.");
+		printf("Queue empty.\n");
 		return INT_MIN; 
 	}
 	return pop(deque);
@@ -134,11 +135,11 @@ void display(struct Stack* deque)
 {
 	int i;
 	
-	printf("\nContents of deque: ");
+	printf("Contents of deque: ");
 	
 	if( is_empty(deque) )
 	{
-		printf("None");
+		printf("None\n");
 		return;
 	}
 	
@@ -146,6 +147,7 @@ void display(struct Stack* deque)
 	{
 		printf("%d ", deque->arr[i]);
 	}
+	printf("\n");
 }
 
 void main()
@@ -158,7 +160,8 @@ void main()
 	
 	do{
 		scanf("%d", &choice);
-		
+
+		// Display of deleted elements has been commented for convenience
 		switch(choice)
 		{
 			case 1  :  insert_left(&deque);
@@ -166,17 +169,15 @@ void main()
 			case 2  :  insert_right(&deque);
 				   break;
 			case 3  :  deleted_element = delete_left(&deque);
-				   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
+			//	   if( deleted_element != INT_MIN ) printf("Deleted Element: %d\n", deleted_element);
 				   break;
 			case 4  :  deleted_element = delete_right(&deque);
-				   if( deleted_element != INT_MIN ) printf("\nDeleted Element: %d", deleted_element);
+			//	  	if( deleted_element != INT_MIN ) printf("Deleted Element: %d\n", deleted_element);
 				   break;
 			case 5  :  display(&deque);
 				   break;   
 			default :  choice = 6;
 		}
-		
-		printf("\n");
 		
 	}while(choice != 6);
 }
