@@ -80,7 +80,7 @@ void infix_to_postfix ( struct Expression *input, struct Expression *output )
 	char *cur = input->arr;
 	int precedence_of_cur;
 
-	// This for loop uses the condition i < input_size instead of checking whether stack is empty	
+	// This for loop uses the condition i < input_size instead of checking whether stack is empty.	
 	for( int i = 0; i < input_size; ++i, ++cur)	
 	{		
 		if ( *cur == '(' )
@@ -90,6 +90,7 @@ void infix_to_postfix ( struct Expression *input, struct Expression *output )
 		
 		else if ( *cur == ')' )
 		{
+			// This loop may be slightly inefficient.
 			while ( peek ( stack ) != '(' )
 			{
 				push ( output, pop ( stack ) );
@@ -108,7 +109,7 @@ void infix_to_postfix ( struct Expression *input, struct Expression *output )
 		else if ( precedence_of_cur = is_operator ( *cur ), precedence_of_cur )
 		{			
 
-			if( peek(stack) == '(' )
+			if( peek(stack) == '(' ) // This condition may be unnecessary
 			{
 				push ( stack, *cur );
 			}
