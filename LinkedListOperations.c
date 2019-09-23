@@ -119,7 +119,7 @@ void delete_rear(MyNode* list){
 	cur->next = NULL;
 }
 
-void insert_middle(MyNode* list){
+void insert_any_position(MyNode* list){
 
 	// Position starts from zero
 	int position;
@@ -157,6 +157,48 @@ void insert_middle(MyNode* list){
 	
 		printf("Position exceeds size of linked list.\n");
 	}
+}
+
+void delete_any_element(MyNode* list){
+
+	// Checks if list is empty
+	if (*list == NULL){
+	
+		printf("Empty.\n");
+		return;
+	}
+
+	int item = read_element();
+
+	//TODO: Delete all nodes were data == item rather than just the first match
+
+	// If first element is item
+	if ((*list)->data == item){
+
+		MyNode temp = *list;
+		*list = (*list)->next;
+		free(temp);
+		return;
+	}
+
+	MyNode cur, future; 
+	//Note: prev and cur may have been better variable names than cur and future respectively
+
+	// This loop finds the item while keeping track of the node previous to it,
+	// then the node with the item is deleted.
+	for( cur = *list, future = cur->next; future != NULL; cur = cur->next, future = future->next){
+
+		if (future->data == item){
+		
+			MyNode temp = future->next;
+			free(future);
+			cur->next = temp;
+			return;
+		}
+	}
+
+	// Control only reaches here when the loop finishes with no match
+	printf("Not found.\n");	
 }
 
 void find(MyNode* list){
@@ -201,13 +243,13 @@ void main(){
 		
 		case 2: insert_front(&list); break;
 		
-		case 3: insert_middle(&list); break;
+		case 3: insert_any_position(&list); break;
 		
 		case 4: insert_rear(&list); break;
 		
 		case 5: delete_front(&list); break;
 		
-	//	case 6: delete_middle(); break;
+		case 6: delete_any_element(&list); break;
 		
 		case 7: delete_rear(&list); break;
 		
