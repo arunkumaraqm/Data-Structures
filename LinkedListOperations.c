@@ -14,7 +14,7 @@ struct Node{
 	struct Node* next;	
 };
 
-// Renaming struct Node* to MyNode
+// Aliasing struct Node* to MyNode
 typedef struct Node* MyNode;
 
 void display(MyNode* list){
