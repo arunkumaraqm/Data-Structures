@@ -1,3 +1,6 @@
+// Addition, subtraction or multiplication on two matrices
+// This program makes wise use of function pointers.
+
 #include  <stdio.h>
 
 int add(int one, int two){ return one + two; }
@@ -71,7 +74,9 @@ void main()
     	}
 
 		int result[rows1][cols1];
-    	add_or_subtract('a' - 1 + choice, rows1, cols1, one, two, result);
+    	add_or_subtract('a' - 1 + choice, rows1, cols1, one, two, result); 
+		// 'a' - 1 + choice evaluates to 'a' for addition and 'b' for subtraction. It should've been 's' for subtraction
+		// but anything other than 'a' would do, which is why 'b' works
 		output_mat(rows1, cols1, result);    
 	}
 	else{
