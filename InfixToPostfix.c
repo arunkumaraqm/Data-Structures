@@ -69,7 +69,7 @@ void write_expression ( struct Expression *output )
 
 void infix_to_postfix ( struct Expression *input, struct Expression *output )
 {
-	struct Expression *stack = ( struct Expression* ) malloc ( sizeof ( struct Expression ) );
+	struct Expression *stack = malloc ( sizeof stack );
 	my_constructor ( stack );
 	
 	push ( stack, '(' );
@@ -80,7 +80,7 @@ void infix_to_postfix ( struct Expression *input, struct Expression *output )
 	char *cur = input->arr;
 	int precedence_of_cur;
 
-	// This for loop uses the condition i < input_size instead of checking whether stack is empty.	
+	// This for loop uses the condition i < input_size instead of checking whether stack is empty	
 	for( int i = 0; i < input_size; ++i, ++cur)	
 	{		
 		if ( *cur == '(' )
@@ -104,25 +104,15 @@ void infix_to_postfix ( struct Expression *input, struct Expression *output )
 			push ( output, *cur );
 		}
 
-		// Beware: comma
-		// A better way of doing else if ( is_operator ( *cur ) )
-		else if ( precedence_of_cur = is_operator ( *cur ), precedence_of_cur )
+		// Assignment and non-zero check happening in this condition
+		else if ( precedence_of_cur = is_operator ( *cur ))
 		{			
-
-			if( peek(stack) == '(' ) // This condition may be unnecessary
+			while ( is_operator ( peek ( stack ) ) >= precedence_of_cur )
 			{
-				push ( stack, *cur );
+				push ( output, pop ( stack ) );
 			}
-
-			else
-			{
-				while ( is_operator ( peek ( stack ) ) >= precedence_of_cur )
-				{
-					push ( output, pop ( stack ) );
-				}
 			
 				push ( stack, *cur );
-			}
 		}
 	
 		printf("\nSymbol Scanned: %c", *cur);//
