@@ -65,7 +65,7 @@ void read_polynomial(CircularList* polynomial){
 	float local_coeff; int local_expo;
 	char yn;
 
-	polynomial->tail = malloc(sizeof polynomial->tail);
+	polynomial->tail = malloc(sizeof *polynomial->tail);
 	NodePointer cur = polynomial->tail;
 	NodePointer past = NULL;	
 	
@@ -104,7 +104,7 @@ void read_polynomial(CircularList* polynomial){
 			// Inserting at the end of the circular list
 			past = cur;
 			cur = NULL;
-			cur = malloc(sizeof cur);
+			cur = malloc(sizeof *cur);
 			cur->coeff = local_coeff;
 			cur->expo = local_expo;
 			cur->next = past->next;
@@ -115,39 +115,67 @@ void read_polynomial(CircularList* polynomial){
 
 }
 
-CircularList* add_polynomials(const CircularList* first_polynomial, const CircularList* second_polynomial){
+NodePointer copy_of_Node(NodePointer node){
+
+	NodePointer new_node = malloc(sizeof *new_node);
+	new_node->expo = node->expo;
+	new_node->coeff = node->coeff;
+	new_node->next = node->next;
+	return new_node;
+}
+
+CircularList* copy_of_CircularList(CircularList* list){
+
+	CircularList* new_list = malloc(sizeof *new_list);
+	NodePointer orig_cur = list->tail;
+	NodePointer dupl_cur = new_list->tail;
+	
+	do{
+
+		duplicate_cur = copy_of_Node(original_cur);
+		original_cur = original_cur->next; 
+		duplicate_cur = duplicate_cur->next; 
+	}
+}
+
+CircularList* add_polynomials(CircularList* first_polynomial, CircularList* second_polynomial){
 
 	NodePointer one = first_polynomial->tail;
 	NodePointer two = second_polynomial->tail;
 	
 	// When one or both of the polynomials are empty
 	if (one == NULL){
-		
-		return second_polynomial;
+
+		// Covers both being null
+		return copy_of(second_polynomial);
 	}
 	else if (two == NULL){
 	
-		return first_polynomial;
+		return copy_of(first_polynomial);
+	}
+
+	//
+	one = one->next; two = two->next;
+	while( one != first_polynomial->tail 
+		&& two != second_polynomial->tail){
+
+		if 
 	}
 	
-	//
-	//one = one->next; two = two->next;
-	
-	
 	// Packing sum inside a box called temp (CircularList) and returning the box.
-	/*CircularList* temp = malloc(sizeof temp);
+	/*CircularList* temp = malloc(sizeof *temp);
 	temp->tail = sum;
 	return temp;*/
 }
 
 void main(){
 
-	CircularList* one = malloc(sizeof one);
+	CircularList* one = malloc(sizeof *one);
 	one->tail = NULL;
 	read_polynomial(one);
 	display_polynomial(one);
 	
-	CircularList* two = malloc(sizeof two);
+	CircularList* two = malloc(sizeof *two);
 	two->tail = NULL;
 	read_polynomial(two);
 	display_polynomial(two);
@@ -155,12 +183,10 @@ void main(){
 	CircularList* sum = add_polynomials(one, two);
 	display_polynomial(sum);
 	
-	flag(3);
-	destructor(sum); free_and_null(sum); 
-	flag(4);
+	destructor(sum);  
 	destructor(one); free_and_null(one);
-	
-	flag(5);destructor(two); free_and_null(two);
+	destructor(two); free_and_null(two);
+	//free_and_null(sum);
 }
 
 /*
