@@ -20,46 +20,14 @@ typedef struct CircularList{
 
 	NodePointer tail;
 }CircularList;
-/*
-void display_polynomial(CircularList* polynomial);//
-
-void read_polynomial(CircularList* polynomial){
-
-	float local_coeff;
-	int local_expo;
-	char yn;
-
-	do{
-	
-	while(yn == 'y' || yn == 'Y'){
-
-		scanf("%f %d %c", &local_coeff, &local_expo, &yn);
-
-		if(local_coeff) insert_term(polynomial, local_coeff, local_expo);
-
-		display_polynomial(polynomial);//
-	}
-
-}
-
-void display_polynomial(NodePointer* polynomial){
-
-	for (NodePointer cur = *polynomial; cur != NULL; cur = cur->next){
-	
-		printf("%fx^%d + ", cur->coeff, cur->expo);
-	}
-	
-	printf("0\n");
-}
-*/
 
 void create_first(CircularList* list){
 
-	flag(20);
-	list->tail = malloc(sizeof list->tail);
-	list->tail->expo = 50;
-	list->tail->next = NULL;
-	flag(21);
+	NodePointer cur = list->tail;
+	cur = malloc(sizeof cur);
+	cur->expo = 50;
+	cur->next = cur;
+	list->tail = cur;
 }
 
 // To free all memory at the end of main
@@ -77,19 +45,98 @@ void destructor(CircularList* list){
 		free_and_null(past);
 	}
 
-	free_and_null(list->tail);  
+	free_and_null(list->tail); 
 }
 
+void display_polynomial(CircularList* list){
+
+	if (list->tail == NULL){ // List empty condition
+	
+		printf("Zero.\n");
+	}
+/*	else if (list->tail->next == list->tail){ // One node condition
+	
+		printf("%fx^%d + ", list->tail->coeff, list->tail->expo);
+	}
+*/	else{ // Normal condition
+		
+		NodePointer cur = list->tail->next; 
+		printf("Display: "); // 
+		
+		//for has been changed to a do-while because loop condition was already checked 
+		do{
+		
+			printf("%fx^%d + ", cur->coeff, cur->expo); //temp modif
+			cur = cur->next;	
+		}while (cur != list->tail->next);	
+	}
+}
+
+void read_polynomial(CircularList* polynomial){
+
+	float local_coeff; int local_expo;
+	char yn;
+
+	polynomial->tail = malloc(sizeof polynomial->tail);
+	NodePointer cur = polynomial->tail;
+	NodePointer past = NULL;	
+	
+	
+	scanf("%f %d %c", &local_coeff, &local_expo, &yn);
+
+	if(local_coeff){
+	
+		// Inserting first node
+		cur->coeff = local_coeff;
+		cur->expo = local_expo;
+		cur->next = cur;
+	}
+
+//TODO: What about when local_coeff is zero?
+		
+	while (yn == 'Y' || yn == 'y'){
+
+		scanf("%f %d %c", &local_coeff, &local_expo, &yn);
+
+		if(local_coeff){
+		
+			// Inserting at the end of the circular list
+			past = cur;
+			cur = NULL;
+			cur = malloc(sizeof cur);
+			cur->coeff = local_coeff;
+			cur->expo = local_expo;
+			cur->next = past->next;
+			past->next = cur; 
+		}
+	}
+	polynomial->tail = cur; // tail was pointing to that first node until now
+
+}
+
+CircularList* add_polynomials(CircularList* one, CircularList* two){
+
+	
+}
 void main(){
 
-	CircularList* polynomial = malloc(sizeof polynomial);
-	polynomial->tail = NULL;
+	CircularList* one = malloc(sizeof one);
+	one->tail = NULL;
+	read_polynomial(one);
+	display_polynomial(one);
 	
-	create_first(polynomial);
-	(polynomial->tail == NULL )? printf("Yes"): printf("No"); 
-	destructor(polynomial);
+	CircularList* two = malloc(sizeof two);
+	two->tail = NULL;
+	read_polynomial(two);
+	display_polynomial(two);
+	
+	sum = add_polynomials(one, two);
+	display_polynomial(sum);
+	
+	destructor(one);
+	destructor(two);
+	destructor(sum);
 }
-
 
 
 
