@@ -21,19 +21,10 @@ typedef struct CircularList{
 	NodePointer tail;
 }CircularList;
 
-void create_first(CircularList* list){
-
-	NodePointer cur = list->tail;
-	cur = malloc(sizeof cur);
-	cur->expo = 50;
-	cur->next = cur;
-	list->tail = cur;
-}
-
-// To free all memory at the end of main
+// To free all memory of the linked list at the end of main
 void destructor(CircularList* list){
 
-	if (list->tail == NULL) return;
+	if (list->tail == NULL){ flag(10);return;}
 
 	NodePointer past = NULL, cur = NULL;
 
@@ -54,11 +45,8 @@ void display_polynomial(CircularList* list){
 	
 		printf("Zero.\n");
 	}
-/*	else if (list->tail->next == list->tail){ // One node condition
 	
-		printf("%fx^%d + ", list->tail->coeff, list->tail->expo);
-	}
-*/	else{ // Normal condition
+	else{ // Normal condition
 		
 		NodePointer cur = list->tail->next; 
 		printf("Display: "); // 
@@ -66,7 +54,7 @@ void display_polynomial(CircularList* list){
 		//for has been changed to a do-while because loop condition was already checked 
 		do{
 		
-			printf("%fx^%d + ", cur->coeff, cur->expo); //temp modif
+			printf("%fx^%d + ", cur->coeff, cur->expo); 
 			cur = cur->next;	
 		}while (cur != list->tail->next);	
 	}
@@ -81,18 +69,31 @@ void read_polynomial(CircularList* polynomial){
 	NodePointer cur = polynomial->tail;
 	NodePointer past = NULL;	
 	
-	
-	scanf("%f %d %c", &local_coeff, &local_expo, &yn);
+	// This do while is just for the first node
+	do{
+		scanf("%f %d %c", &local_coeff, &local_expo, &yn);
 
-	if(local_coeff){
+		if(local_coeff){
 	
-		// Inserting first node
-		cur->coeff = local_coeff;
-		cur->expo = local_expo;
-		cur->next = cur;
-	}
-
-//TODO: What about when local_coeff is zero?
+			// Inserting first node
+			cur->coeff = local_coeff;
+			cur->expo = local_expo;
+			cur->next = cur;
+		}
+	
+		// local_coeff is zero and user wants to exit
+		else if (yn != 'Y' && yn != 'y'){
+	
+			free_and_null(polynomial->tail);
+			return;
+		}
+	
+		else{
+		
+			continue;
+		}
+	
+	}while (0);
 		
 	while (yn == 'Y' || yn == 'y'){
 
@@ -114,10 +115,31 @@ void read_polynomial(CircularList* polynomial){
 
 }
 
-CircularList* add_polynomials(CircularList* one, CircularList* two){
+CircularList* add_polynomials(const CircularList* first_polynomial, const CircularList* second_polynomial){
 
+	NodePointer one = first_polynomial->tail;
+	NodePointer two = second_polynomial->tail;
 	
+	// When one or both of the polynomials are empty
+	if (one == NULL){
+		
+		return second_polynomial;
+	}
+	else if (two == NULL){
+	
+		return first_polynomial;
+	}
+	
+	//
+	//one = one->next; two = two->next;
+	
+	
+	// Packing sum inside a box called temp (CircularList) and returning the box.
+	/*CircularList* temp = malloc(sizeof temp);
+	temp->tail = sum;
+	return temp;*/
 }
+
 void main(){
 
 	CircularList* one = malloc(sizeof one);
@@ -130,14 +152,30 @@ void main(){
 	read_polynomial(two);
 	display_polynomial(two);
 	
-	sum = add_polynomials(one, two);
+	CircularList* sum = add_polynomials(one, two);
 	display_polynomial(sum);
 	
-	destructor(one);
-	destructor(two);
-	destructor(sum);
+	flag(3);
+	destructor(sum); free_and_null(sum); 
+	flag(4);
+	destructor(one); free_and_null(one);
+	
+	flag(5);destructor(two); free_and_null(two);
 }
 
+/*
+
+Test 1:
+5x2 + 6x1 + 9x0
+5x2 + 6x1 + 10x0
+
+Input
+5 2 y 6 1 y 9 0 n
+5 2 y 6 1 y 10 0 n
+
+
+ 0 1 n 0 1 n
+*/
 
 
 
