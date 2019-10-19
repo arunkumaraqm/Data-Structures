@@ -1,8 +1,7 @@
-// To read and add polynomials using linked list
+// To read and add polynomials using circular linked list
 
 #include <stdio.h>
 #include <stdlib.h> // For malloc()
-#define flag(n) printf("Flag %d.\n", n)
 
 #define free_and_null(ptr) {free(ptr); ptr = NULL;}
 
@@ -24,7 +23,7 @@ typedef struct CircularList{
 // To free all memory of the linked list at the end of main
 void destructor(CircularList* list){
 
-	if (list->tail == NULL){ flag(10);return;}
+	if (list->tail == NULL) return;
 
 	NodePointer past = NULL, cur = NULL;
 
@@ -58,7 +57,8 @@ void display_polynomial(CircularList* list){
 void read_polynomial(CircularList* polynomial){
 
 	float local_coeff; int local_expo;
-	char yn = 'y';
+	char yn = 'y'; // yn stands for yes or no -- 'y' or 'Y' for yes, anything else for no
+				   // It contains the answer to "Do you want to continue?"
 
 	polynomial->tail = malloc(sizeof *polynomial->tail);
 	NodePointer cur = polynomial->tail;
@@ -89,24 +89,11 @@ void read_polynomial(CircularList* polynomial){
 
 }
 
+// Copies data into node
 void insert_term(NodePointer node, float coeff, int expo){
 
 	node->coeff = coeff;
 	node->expo = expo;
-}
-
-// Temp
-void display(NodePointer list){
-	
-	// Display will look like 10 -> 20 -> 30 -> NULL
-	printf("Linked List: ");
-	
-	for (NodePointer cur = list; cur != NULL; cur = cur->next){
-	
-		printf("%f, %d -> ", cur->coeff, cur->expo);
-	}
-	
-	printf("NULL\n");
 }
 
 #define allocate() malloc(sizeof(struct Node))
@@ -123,6 +110,7 @@ CircularList* add_polynomials(CircularList* first_polynomial, CircularList* seco
 	// one starts from second element and goes till last element
 	// Rememeber that the first element is always zero
 	// Same is the case with two
+	// This loop terminates when we run out of nodes on either one or two
 	while (one != first_head && two != second_head){
 
 		sum->next = allocate();
@@ -144,14 +132,21 @@ CircularList* add_polynomials(CircularList* first_polynomial, CircularList* seco
 
 			if (one->coeff + two->coeff != 0)
 				insert_term(sum, one->coeff + two->coeff, one->expo);
-				// TODO: When the sum is zero, don't allocate another node for sum-next
-			one = one->next; two = two->next;
-		}
 
-		display(sum_head);
-		
+			else{
+
+				// Getting rid of the node that we allocated at the beginning of the loop
+				NodePointer past;
+				for (past = sum_head; past->next != sum; past = past->next);
+				free_and_null(sum);
+				sum = past;
+			}
+			
+			one = one->next; two = two->next;
+		}		
 	}
 
+	// For any nodes remaining in one
 	while (one != first_head){
 
 		sum->next = allocate();
@@ -159,7 +154,8 @@ CircularList* add_polynomials(CircularList* first_polynomial, CircularList* seco
 		insert_term(sum, one->coeff, one->expo);
 		one = one->next;
 	}
-	
+
+	// For any nodes remaining in two
 	while (two != second_head){
 
 		sum->next = allocate();
@@ -168,6 +164,7 @@ CircularList* add_polynomials(CircularList* first_polynomial, CircularList* seco
 		two = two->next;
 	}
 
+	// Making the linked list circular
 	sum->next = sum_head;
 	
 	// Packing sumhead inside a box called temp (CircularList) and returning the box.
@@ -176,27 +173,34 @@ CircularList* add_polynomials(CircularList* first_polynomial, CircularList* seco
 	return temp;
 }
 
+// Driver function
 void main(){
 
+	// Getting the first polynomial
 	CircularList* one = malloc(sizeof *one);
 	one->tail = NULL;
 	read_polynomial(one);
-	display_polynomial(one);
-	
+	display_polynomial(one);//
+
+	// Getting the second polynomial
 	CircularList* two = malloc(sizeof *two);
 	two->tail = NULL;
 	read_polynomial(two);
-	display_polynomial(two);
-	
+	display_polynomial(two);//
+
+	// Adding them and storing the result in sum
 	CircularList* sum = add_polynomials(one, two);
 	display_polynomial(sum);
-	
+
+	// Freeing all the heap memory we used
 	destructor(sum); free_and_null(sum); 
 	destructor(one); free_and_null(one);
 	destructor(two); free_and_null(two);
 }
 
 /*
+
+TEST CASES
 
 	Test 1:
 0x1
@@ -288,6 +292,40 @@ Input
 
 Output
 5x6 + 12x5 + 9x1 + 7x0
+
+	Test 9: 
+5x5 + 4x4 + 3x3 -2x2
+5x7 + 6x6 + 3x4 + 3x3 + 2x2 + 1x1 + 8x0
+
+Input
+5 5 y 4 4 y 3 3 y -2 2 n
+5 7 y 6 6 y 3 4 y 3 3 y 2 2 y 1 1 y 8 0 n
+
+Output
+5x7 + 6x6 + 5x5 + 7x4 + 6x3 + 1x1 + 8x0
+
+	Test 10:
+5x5 + 3x3 + 2x1 + 1x0
+- 5x5 - 3x3 - 2x1 - 1x0
+
+Input
+5 5 y 3 3 y 2 1 y 1 0 n
+-5 5 y -3 3 y -2 1 y -1 0 n
+
+Output
+0x0
+
+	Test 11:
+4.10x5 + 3.20x3 + 5.33x1 + 7.67x0
+5x6 + 8.1x5 - 3.34x3 + 4.46x1
+
+Input
+4.10 5 y 3.20 3 y 5.33 1 y 7.67 0 n
+5 6 y 8.1 5 y -3.34 3 y 4.46 1 n
+
+Output
+5x6 + 12.2x5 - 0.14x3 + 9.79x1 + 7.67x0
+
 
 */
 
