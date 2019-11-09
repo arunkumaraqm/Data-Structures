@@ -25,14 +25,14 @@ void quick_sort(int beg, int end, int* arr){
 	if (beg < end){
 
 		// Here, pivot is chosen as the median element
-		int i = beg, j = end, pivot = arr[(beg + end)/2];
+		int i = beg - 1, j = end + 1, pivot = arr[(beg + end)/2];
 		
 		while (1){
 
-			while (arr[i] < pivot) ++i;
-			while (arr[j] > pivot) --j;
+			++i; while (arr[i] < pivot) ++i;
+			--j; while (arr[j] > pivot) --j;
 
-			if (i == j){
+			if (i >= j){
 
 				quick_sort(beg, i - 1, arr); // Quick sort on the first partition
 				quick_sort(i + 1, end, arr); // Quick sort on the second partition
