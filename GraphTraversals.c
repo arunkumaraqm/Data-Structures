@@ -187,6 +187,13 @@ void main(){
 	Graph graph;
 	g_constructor(&graph);
 	g_print_adj_mat(&graph);
+	scanf("%d", noof_vertices);
+	for (i = 0; i < noof_vertices; ++i, g_add_vert(&graph));
+	do{
+		scanf("%d %d %c", &beg, &end, &yn);
+		g_add_edge(&graph, beg, end);
+	}while (yn == 'y');
+		
 	breadth_first_traversal(&graph);
 	
 }
