@@ -12,9 +12,9 @@ void read_arr(int size, int* arr){
 
 int binary_search(int beg, int end, int* arr, int item){
 
-	int mid = (beg + end) / 2;
-	
 	if (beg > end) return -1;
+	
+	int mid = (beg + end) / 2;
 	
 	if (arr[mid] < item){
 	
@@ -34,7 +34,7 @@ void main(){
 	int size;
 	scanf("%d", &size);
 	
-	int *arr = calloc(size, sizeof(int));
+	int arr[size];
 	read_arr(size, arr);
 	
 	int item;
