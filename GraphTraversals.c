@@ -34,7 +34,7 @@ bool q_isempty(Queue *que){
 }
 
 //-----------------------
-// STACK AND ITS OPERATIONS
+// STACK AND ITS OPERATIONS - IGNORE ALL OF THIS
 typedef struct Stack
 {
 	int top;
@@ -56,6 +56,10 @@ int s_pop(Stack* stack)
 	return stack->arr[stack->top--];
 }
 
+bool s_isempty(Stack* stack){
+
+	return (stack->top == -1);
+}
 //--------------------------------
 // LIST / ARRAY AND ITS OPERATIONS
 
@@ -73,12 +77,12 @@ int l_find(int size, int* arr, int search_elem){ // Linear search using sentinel
 	}
 	else return i;
 }
-
+/*
 int l_display(int size, int* arr){ //Temp
 
 	for(;size > 0; --size, ++arr) printf("%d ", *arr);
 	printf("End.\n");
-}
+}*/
 
 //--------------------------------
 // GRAPH AND ITS OPERATIONS
@@ -92,15 +96,10 @@ typedef struct Graph{
 void g_constructor(Graph *graph){
 
 	graph->noof_verts = 0;
-	memset(&graph->adj_mat[0][0], 0, sizeof(bool) * MAXVERTICES * MAXVERTICES);
-
-	/*
-	int i, j;
-	for (i = 0; i < MAXVERTICES; ++i)
-	for (j = 0; j < MAXVERTICES; ++j)
-			graph->adj_mat[i][j] = 0;*/
+	memset(&graph->adj_mat[0][0], 0, sizeof(bool) * MAXVERTICES * MAXVERTICES); // Sets all elements to zero. However, it is a risky function for non char data types; would not advise usage. 
 }
 
+// Adds one vertex
 bool g_add_vert(Graph* graph){
 
 	graph->noof_verts++;
@@ -112,18 +111,24 @@ bool g_add_vert(Graph* graph){
 	return 1;
 }
 
+// Adds one edge between two given vertices
 bool g_add_edge(Graph *graph, int one, int two){
 
-	if (one == two || 
-		one >= graph->noof_verts || 
-		two >= graph->noof_verts){
+	if (one == two || // Self loops shouldn't exist
+		one >= graph->noof_verts || // Checking whether vertex is present in the graph
+		two >= graph->noof_verts ||
+		graph->adj_mat[one][two] == 1) // Parallel edges shouldn't exist
+	{
 
 		return 0;
 	}
+
+	// 1 in the adjacency matrix signifies presence of an edge
 	graph->adj_mat[one][two] = graph->adj_mat[two][one] = 1; 
 	return 1;
 }
 
+// Prints adjacency matrix - this function isn't used anywhere
 void g_print_adj_mat(Graph *graph){
 
 	int i, j;
@@ -132,53 +137,84 @@ void g_print_adj_mat(Graph *graph){
 	printf("%d ", graph->adj_mat[i][j]);
 }
 
+// Traverses through the graph using BFS
 void breadth_first_traversal(Graph* graph){
 
 	Queue que;
 	q_constructor(&que);
-	#define track_queue() l_display((q_isempty(&que))? 0: que.rear - que.front + 1, que.arr + que.front	); //
-	track_queue();
+
+	// Creating and initalizing visited array to all zeros
 	int visited[graph->noof_verts];
 	for (int i = 0; i < graph->noof_verts; visited[i++] = 0);
 	
 	int cur;
 
-	while(1){
+	while(true){ 
 
+		// If queue is empty, find the next connected component in the graph.
+		// If there is no other connected component, graph has been fully traversed.
 		if (q_isempty(&que)){
 
 			cur = l_find(graph->noof_verts, visited, 0);
-			//printf("found cur at %d\n", cur);//
+			
 			if (cur == -1) break;
 			else{
 
-				printf("\n%d ", cur);
+				printf("\n%d ", cur); // Starting traversal here
 				visited[cur] = 1;
-				//printf("Visited: ");//
-				//l_display(graph->noof_verts, visited);//
 			}
 		}
+
+		// If the queue isn't empty, dequeue and print vertex label.
 		else{
 
 			cur = q_dequeue(&que);
-			//track_queue();//
 			printf("%d ", cur);
 		}
 
-		for (int i = 0; i < graph->noof_verts; ++i){ // Can be optimized?
+		// Add that current vertex's adjacent vertices to the queue and mark them as visited.
+		for (int i = 0; i < graph->noof_verts; ++i){ 
 
 			if (visited[i] != 1 && graph->adj_mat[i][cur]){
 
 				q_enqueue(&que, i);
 				visited[i] = 1;
-				//printf("Visited: ");//
-				//l_display(graph->noof_verts, visited);//
-				//printf("\n");//
-
-				//printf(" cur = %d i = %d\n", cur, i);//
-				//track_queue();//	
 			}
 		}
+	}
+	printf("\n");
+}
+	
+void recursive_depth_first_traversal(Graph *graph, int start, int* visited){
+
+	printf("%d ", start);
+
+	visited[start] = 1;
+
+	for (int i = 0; i < graph->noof_verts; ++i){ 
+
+		if (graph->adj_mat[i][start] && !visited[i]){
+
+			// Recursive DFS on each of the current vertex's adjacent vertices.
+			recursive_depth_first_traversal(graph, i, visited);	
+		}
+	}
+}
+
+// Traverses the graph using DFS.
+void depth_first_traversal(Graph *graph){
+
+	int visited[graph->noof_verts], cur;
+	for (int i = 0; i < graph->noof_verts; visited[i++] = 0);
+
+	
+	// Every iteration traverses one connected component of the graph.
+	while(true){
+
+		cur = l_find(graph->noof_verts, visited, 0);
+		if (cur == -1) break; // No more connected components
+		else recursive_depth_first_traversal(graph, cur, visited);	
+		printf("\n");	
 	}
 }
 
@@ -186,44 +222,126 @@ void main(){
 
 	Graph graph;
 	g_constructor(&graph);
-	g_print_adj_mat(&graph);
-	scanf("%d", noof_vertices);
-	for (i = 0; i < noof_vertices; ++i, g_add_vert(&graph));
+	char choice;
+
 	do{
-		scanf("%d %d %c", &beg, &end, &yn);
-		g_add_edge(&graph, beg, end);
-	}while (yn == 'y');
+
+		scanf(" %c", &choice);
+		switch(choice){
+
+		case 'a': {	
+					int noof_verts;
+					scanf("%d", &noof_verts);
+					for (; noof_verts > 0; --noof_verts) g_add_vert(&graph); 
+				} break;
+				
+		case 'b': {
+					int one, two;
+					scanf("%d %d", &one, &two);
+					if (g_add_edge(&graph, one, two) == 0) 
+						printf("Multigraphs are not accomodated.\n");
+				} break;
+				
+		case 'c': printf("BFT:\n"); breadth_first_traversal(&graph); break;
+				
+		case 'd': printf("DFT:\n"); depth_first_traversal(&graph); break;
+
+		default: choice = 0;
 		
-	breadth_first_traversal(&graph);
-	
+		}
+
+	}while(choice != 0);
 }
 /*
+#
+a 1
+c 
+d
+z
 
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	g_add_vert(&graph);
-	printf("%d\n", graph.noof_verts);//
-	g_add_edge(&graph, 0, 3);
-	g_add_edge(&graph, 9, 3);
-	g_add_edge(&graph, 4, 3);
-	g_add_edge(&graph, 2, 3);
-	g_add_edge(&graph, 1, 4);
-	g_add_edge(&graph, 1, 2);
-	g_add_edge(&graph, 2, 5);
-	g_add_edge(&graph, 5, 6);
-	g_add_edge(&graph, 5, 7);
-	g_add_edge(&graph, 2, 7);
-	g_add_edge(&graph, 2, 8);
-	g_add_edge(&graph, 5, 8);
-	g_add_edge(&graph, 7, 8);
-	g_add_edge(&graph, 10, 11);
+bfs: 0
+dfs: 0
+
+#
+a 4
+c
+d
+z
+
+bfs: 0 \n 1 \n 2 \n 3
+dfs: the same
+#
+a 3
+b 0 1
+c
+d
+z
+
+bfs: 0 1 \n 2
+dfs: 0 1 \n 2
+
+#
+a 5
+b 1 2
+b 2 3
+b 3 4
+b 4 1
+c
+d 
+z
+
+bfs: 0 \n 1 2 4 3
+dfs: 0 \n 1 2 3 4
+
+#
+a 5
+b 0 1
+b 0 3
+b 0 2 
+b 1 4
+b 4 3
+b 2 3
+c
+d 
+z
+
+bfs: 0 1 2 3 4 
+dfs: 0 1 4 3 2
+
+#
+a 5 
+b 0 1
+b 0 3
+b 1 2
+b 3 2
+b 2 4
+b 3 4
+c
+d
+z
+
+bfs: 0 1 3 2 4
+dfs: 0 1 2 3 4
+
+a 12
+b 0 3	
+b 9 3
+b 4 3
+b 2 3
+b 1 4
+b 1 2
+b 2 5
+b 5 6
+b 5 7
+b 2 7
+b 2 8
+b 5 8
+b 7 8
+b 10 11
+c
+d
+z
+
+bfs: 0 3 2 4 9 1 5 7 8 6 \n 10 11
+dfs:0 3 2 1 4 5 6 7 8 9 \n 10 11
 */
